@@ -1,0 +1,31 @@
+Title: YouTube Data Harvesting and Warehousing using SQL, MongoDB and Streamlit
+
+Overview: This project focuses on harvesting and warehousing YouTube data through the YouTube API, utilizing both SQL and MongoDB databases for storage. The data is then presented in a user-friendly interface using Streamlit.
+
+Features: YouTube Data Harvesting:
+
+Utilize the YouTube API to extract data such as video details, comments, and statistics. Data Warehousing:
+
+Implement a dual-database system with SQL and MongoDB. SQL for structured data, storing information like video metadata. MongoDB for unstructured data, housing elements like comments and user interactions. Streamlit Dashboard:
+
+Create an interactive dashboard using Streamlit for easy data exploration. Provide users with the ability to filter and visualize data dynamically. SQL Database Schema:
+
+Define a clear and efficient SQL database schema to organize structured data effectively. MongoDB Data Model:
+
+Design an appropriate data model for MongoDB to handle unstructured data, ensuring scalability and performance. ETL (Extract, Transform, Load):
+
+Develop an ETL process to seamlessly transfer data from the YouTube API to the SQL and MongoDB databases. User Authentication:
+
+Implement a secure user authentication system for accessing the Streamlit dashboard. Data Analysis:
+
+Provide basic data analysis features within the Streamlit dashboard, such as trending videos, popular channels, and user engagement metrics. Documentation:
+
+Create comprehensive documentation with setup instructions, dependencies, and usage guidelines. Technologies Used: YouTube API: For fetching data from YouTube. SQL Database (e.g., MySQL, PostgreSQL): For structured data storage. MongoDB: For unstructured data storage. Streamlit: For building the interactive web dashboard. Getting Started: Installation:
+
+Clone the repository. Install the required dependencies specified in the documentation. Configuration:
+
+Set up API keys for the YouTube API. Configure database connections in the appropriate configuration files. Run the ETL Process:
+
+Execute the ETL process to fetch data from YouTube and populate the SQL and MongoDB databases. Start the Streamlit Dashboard:
+
+Launch the Streamlit application to visualize and explore the harvested YouTube data.
