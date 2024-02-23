@@ -29,3 +29,48 @@ Set up API keys for the YouTube API. Configure database connections in the appro
 Execute the ETL process to fetch data from YouTube and populate the SQL and MongoDB databases. Start the Streamlit Dashboard:
 
 Launch the Streamlit application to visualize and explore the harvested YouTube data.
+workflow: 
+# YouTube Data Harvesting and Warehousing Project
+
+## Overview
+
+This project focuses on harvesting YouTube data and storing it in a data warehouse. The data is collected using the YouTube Data API, processed, and then stored in both SQL and MongoDB databases. A Streamlit web application is built to visualize and interact with the stored data.
+
+## Workflow
+
+1. **YouTube Data Harvesting:**
+   - Obtain API keys for the YouTube Data API.
+   - Configure API access in `config.py`.
+   - Run `harvest_data.py` to fetch YouTube video data based on specified criteria (e.g., keywords, channels).
+
+2. **Data Processing and Warehousing:**
+   - Process the raw data to extract relevant information.
+   - Store the processed data in both SQL (using MySQL in this example) and MongoDB databases.
+   - Update database connection details in `config.py`.
+
+3. **Streamlit Web Application:**
+   - Build a Streamlit web application to interact with the stored data.
+   - Customize the application according to specific requirements.
+   - Run the application using `streamlit run app.py`.
+
+## Project Structure
+## Setup
+1. Install dependencies using `pip install -r requirements.txt`.
+2. Configure API keys and database connections in `config.py`.
+3. Execute `harvest_data.py` to fetch YouTube data.
+4. Run `process_data.py` to process and store data in databases.
+5. Launch the Streamlit app using `streamlit run app.py`.
+
+## Dependencies
+
+- pandas
+- requests
+- pymongo
+- mysql-connector-python
+- streamlit
+
+## Note
+
+Ensure that you comply with YouTube API usage policies and guidelines when using API keys for data harvesting.
+
+Feel free to customize the project structure, data processing steps, and database choices based on your specific needs.
