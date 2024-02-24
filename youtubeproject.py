@@ -477,6 +477,8 @@ except Exception as e:
     st.error(f"An error occurred: {e}")
 
 #SQL connection
+import mysql.connector
+import pandas as pd
 
 mycon = mysql.connector.connect(host ='localhost',user='root',password='12345',database ='youtube_data')
 mycursor = mycon.cursor()
@@ -496,10 +498,8 @@ if question=='1. All the videos and channel name':
     query1 = '''SELECT title AS videos, channel_name FROM videos'''
     mycursor.execute(query1)
     t1 = mycursor.fetchall()
-    mycursor.close()
-    mycon.close()
-    df = pd.DataFrame(t1, columns=['Video title', 'Channel_name'])
-    st.write(df)
+    df1 = pd.DataFrame(t1, columns=['video title', 'channel_name'])
+    st.write(df1)
 
 elif question=='2. Channels with most number of videos':
     query2 = '''SELECT channel_name AS channelname, total_videos AS no_videos 
@@ -507,10 +507,8 @@ elif question=='2. Channels with most number of videos':
            ORDER BY total_videos DESC'''
     mycursor.execute(query2)
     t2 = mycursor.fetchall()
-    mycursor.close()
-    mycon.close()
-    df1 = pd.DataFrame(t2, columns=['Channel_name', 'No. of videos'])
-    st.write(df1)
+    df2 = pd.DataFrame(t2, columns=['channel_name', 'No. of videos'])
+    st.write(df2)
 
 elif question == '3. 10 most viewed videos':
     query3 = '''SELECT views AS views, channel_name AS channelname, title as video_title
@@ -518,17 +516,17 @@ elif question == '3. 10 most viewed videos':
                 ORDER BY views DESC LIMIT 10'''
     mycursor.execute(query3)
     t3 = mycursor.fetchall()
-    df2 = pd.DataFrame(t3, columns=['views', 'channel_name', 'video_title'])  # Adjust column names
-    st.write(df2)
+    df3 = pd.DataFrame(t3, columns=['views', 'channel_name', 'video_title'])  # Adjust column names
+    st.write(df3)
 
 elif question == '4. Comments in each video':
      query4 = '''SELECT comments AS no_comments, title AS video_title
                 FROM videos WHERE comments IS NOT NULL
-                ORDER BY no_comments DESC LIMIT 10'''
+                '''
      mycursor.execute(query4) 
      t4 = mycursor.fetchall()
-     df3 = pd.DataFrame(t4, columns=['Comments', 'Video_title'])  # Adjust column names
-     st.write(df3)
+     df4 = pd.DataFrame(t4, columns=['no_comments', 'video_title'])  # Adjust column names
+     st.table(df4)
 
 elif question == '5. Videos with highest likes':
     query5 = '''SELECT title AS video_title, channel_name AS channelname, Likes as likecount
@@ -536,8 +534,8 @@ elif question == '5. Videos with highest likes':
                 ORDER BY Likes DESC LIMIT 10'''
     mycursor.execute(query5)  # Use the correct query variable 'query5'
     t5 = mycursor.fetchall()
-    df4 = pd.DataFrame(t5, columns=['Video_title', 'Cannelname', 'likecount'])  # Adjust column names
-    st.write(df4)
+    df5 = pd.DataFrame(t5, columns=['video_title', 'channelname', 'likecount'])  # Adjust column names
+    st.write(df5)
 
 elif question == '6. Likes of all videos':
      query6 = '''SELECT Likes as likecount, title as video_title
@@ -554,7 +552,7 @@ elif question == '7. Views of each channel':
              '''
      mycursor.execute(query7)
      t7 = mycursor.fetchall()
-     df7 = pd.DataFrame(t7, columns=['Channelname', 'Totalviews'])
+     df7 = pd.DataFrame(t7, columns=['channelname', 'totalviews'])
      st.write(df7)
     
 elif question == '8. Videos published in the year 2022':
@@ -564,7 +562,7 @@ elif question == '8. Videos published in the year 2022':
      
      mycursor.execute(query8) 
      t8 = mycursor.fetchall()
-     df8 = pd.DataFrame(t8, columns=['Videotitle', 'Published_data','Channelname'])
+     df8 = pd.DataFrame(t8, columns=['videotitle', 'published_data','channelname'])
      st.write(df8)
 
 elif question == '9. Average duration of all videos in each channel':
@@ -572,7 +570,7 @@ elif question == '9. Average duration of all videos in each channel':
                 FROM videos group by channel_name'''
      mycursor.execute(query9)
      t9 = mycursor.fetchall()
-     df9 = pd.DataFrame(t9, columns=['Channelname', 'Averageduration']) 
+     df9 = pd.DataFrame(t9, columns=['channelname', 'averageduration']) 
 
      T9=[]
      for index,row in df9.iterrows():
@@ -589,7 +587,7 @@ elif question == '10. Videos with highest number of comments':
                 '''
         mycursor.execute(query10)
         t10 = mycursor.fetchall()
-        df10 = pd.DataFrame(t10, columns=['Video_title', 'Channelname', 'Comments'])  # Adjust column names
+        df10 = pd.DataFrame(t10, columns=['video_title', 'channelname', 'comments'])  # Adjust column names
         st.write(df10)
 
 mycursor.close()
