@@ -522,7 +522,6 @@ elif question == '4. Comments in each videos':
     mycursor.execute(query4) 
     t4 = mycursor.fetchall()
     df4 = pd.DataFrame(t4, columns=['no_comments', 'video_title'])
-    print(df4)
     st.write(df4)
     
 elif question == '5. Videos with highest likes':
