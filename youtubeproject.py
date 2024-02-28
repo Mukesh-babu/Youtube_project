@@ -284,8 +284,6 @@ def videos_table():
             vid_list.append(vid_data['video_information'][i])
 
     df1 = pd.DataFrame(vid_list)
-
-    # Assuming df1 is your DataFrame
     df1['Published_Date'] = pd.to_datetime(df1['Published_Date']).dt.strftime('%Y-%m-%d %H:%M:%S')
 
     for index, row in df1.iterrows():
@@ -314,11 +312,8 @@ def videos_table():
 
     return df1
 
-# Call the function and store the returned DataFrame
 df1 = videos_table()
-
-# Now df1 is accessible outside the function
-df1.head()  # You can perform further operations on df1 as needed
+df1.head()
 
 
 def comments_table():
@@ -377,7 +372,6 @@ def comments_table():
         except Exception as e:
             print(f'Error during batch insert: {e}')
 
-    # Close the cursor and connection outside of the loop
     mycursor.close()
     mycon.close()
 
@@ -512,12 +506,12 @@ elif question == '3. 10 most viewed videos':
                 ORDER BY views DESC LIMIT 10'''
     mycursor.execute(query3)
     t3 = mycursor.fetchall()
-    df3 = pd.DataFrame(t3, columns=['views', 'channel_name', 'video_title'])  # Adjust column names
+    df3 = pd.DataFrame(t3, columns=['views', 'channel_name', 'video_title'])
     st.write(df3)
 
 elif question == '4. Comments in each videos':
     query4 = '''SELECT comments AS no_comments, title AS video_title
-               FROM videos WHERE comments IS NOT NULL order by no_comments DESC limit 10
+               FROM videos WHERE comments IS NOT NULL order by no_comments DESC
              '''
     mycursor.execute(query4) 
     t4 = mycursor.fetchall()
@@ -530,7 +524,7 @@ elif question == '5. Videos with highest likes':
                 ORDER BY Likes DESC LIMIT 10'''
      mycursor.execute(query5)  # Use the correct query variable 'query5'
      t5 = mycursor.fetchall()
-     df5 = pd.DataFrame(t5, columns=['video_title', 'channelname', 'likecount'])  # Adjust column names
+     df5 = pd.DataFrame(t5, columns=['video_title', 'channelname', 'likecount'])
      st.write(df5)
 
 elif question == '6. Likes of all videos':
@@ -582,7 +576,7 @@ elif question == '10. Videos with highest number of comments':
                 '''
         mycursor.execute(query10)
         t10 = mycursor.fetchall()
-        df10 = pd.DataFrame(t10, columns=['video_title', 'channelname', 'comments'])  # Adjust column names
+        df10 = pd.DataFrame(t10, columns=['video_title', 'channelname', 'comments']) 
         st.write(df10)
 
 mycursor.close()
