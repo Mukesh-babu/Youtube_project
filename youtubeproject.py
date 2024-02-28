@@ -476,10 +476,6 @@ try:
 except Exception as e:
     st.error(f"An error occurred: {e}")
 
-#SQL connection
-import mysql.connector
-import pandas as pd
-
 mycon = mysql.connector.connect(host ='localhost',user='root',password='12345',database ='youtube_data')
 mycursor = mycon.cursor()
 
@@ -519,23 +515,24 @@ elif question == '3. 10 most viewed videos':
     df3 = pd.DataFrame(t3, columns=['views', 'channel_name', 'video_title'])  # Adjust column names
     st.write(df3)
 
-elif question == '4. Comments in each video':
-     query4 = '''SELECT comments AS no_comments, title AS video_title
-                FROM videos WHERE comments IS NOT NULL
-                '''
-     mycursor.execute(query4) 
-     t4 = mycursor.fetchall()
-     df4 = pd.DataFrame(t4, columns=['no_comments', 'video_title'])  # Adjust column names
-     st.table(df4)
-
+elif question == '4. Comments in each videos':
+    query4 = '''SELECT comments AS no_comments, title AS video_title
+               FROM videos WHERE comments IS NOT NULL order by no_comments DESC limit 10
+             '''
+    mycursor.execute(query4) 
+    t4 = mycursor.fetchall()
+    df4 = pd.DataFrame(t4, columns=['no_comments', 'video_title'])
+    print(df4)
+    st.write(df4)
+    
 elif question == '5. Videos with highest likes':
-    query5 = '''SELECT title AS video_title, channel_name AS channelname, Likes as likecount
+     query5 = '''SELECT title AS video_title, channel_name AS channelname, Likes as likecount
                 FROM videos WHERE Likes IS NOT NULL
                 ORDER BY Likes DESC LIMIT 10'''
-    mycursor.execute(query5)  # Use the correct query variable 'query5'
-    t5 = mycursor.fetchall()
-    df5 = pd.DataFrame(t5, columns=['video_title', 'channelname', 'likecount'])  # Adjust column names
-    st.write(df5)
+     mycursor.execute(query5)  # Use the correct query variable 'query5'
+     t5 = mycursor.fetchall()
+     df5 = pd.DataFrame(t5, columns=['video_title', 'channelname', 'likecount'])  # Adjust column names
+     st.write(df5)
 
 elif question == '6. Likes of all videos':
      query6 = '''SELECT Likes as likecount, title as video_title
@@ -548,7 +545,7 @@ elif question == '6. Likes of all videos':
      
 elif question == '7. Views of each channel':
      query7 = '''SELECT channel_name as channelname, SUM(views) as totalviews
-                FROM videos
+                FROM videos GROUP BY channel_name
              '''
      mycursor.execute(query7)
      t7 = mycursor.fetchall()
@@ -559,7 +556,6 @@ elif question == '8. Videos published in the year 2022':
      query8 = '''SELECT title as videotitle, Published_Date as videorelease, channel_name as channelname
                 FROM videos where extract(year from Published_Date)=2022
              '''
-     
      mycursor.execute(query8) 
      t8 = mycursor.fetchall()
      df8 = pd.DataFrame(t8, columns=['videotitle', 'published_data','channelname'])
@@ -592,8 +588,3 @@ elif question == '10. Videos with highest number of comments':
 
 mycursor.close()
 mycon.close()
-
-
-
-
-     
