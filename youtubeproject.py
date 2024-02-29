@@ -140,11 +140,6 @@ def channel_details(channel_id):
 def channels_table():
     mycon = mysql.connector.connect(host='localhost', user='root', password='12345', database='youtube_data')
     mycursor = mycon.cursor()
-
-    drop_query = '''drop table if exists channel_details'''
-    mycursor.execute(drop_query)
-    mycon.commit()
-
     try:
         query = '''CREATE TABLE channel_details (
         Channel_Name VARCHAR(100),
