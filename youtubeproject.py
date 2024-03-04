@@ -140,19 +140,17 @@ def channel_details(channel_id):
 def channels_table():
     mycon = mysql.connector.connect(host='localhost', user='root', password='12345', database='youtube_data')
     mycursor = mycon.cursor()
-    try:
-        query = '''CREATE TABLE channel_details (
-        Channel_Name VARCHAR(100),
-        Channel_ID VARCHAR(100) PRIMARY KEY,
-        Subscribers BIGINT,
-        Views BIGINT,
-        Total_Videos INT,
-        Channel_description TEXT,
-        Playlist_ID VARCHAR(100))'''
-        mycursor.execute(query)
-        mycon.commit()
-    except:
-        print('channel_table already created')
+
+    query = '''CREATE TABLE channel_details (
+    Channel_Name VARCHAR(100),
+    Channel_ID VARCHAR(100) PRIMARY KEY,
+    Subscribers BIGINT,
+    Views BIGINT,
+    Total_Videos INT,
+    Channel_description TEXT,
+    Playlist_ID VARCHAR(100))'''
+    mycursor.execute(query)
+    mycon.commit()
 
     ch_list = []
     db = connection['Youtube_data']
@@ -188,7 +186,7 @@ def channels_table():
     except:
         print('Error during batch insert')
 
-channels_table()
+ channels_table:
 
 mycon = mysql.connector.connect(host='localhost', user='root', password='12345', database='youtube_data')
 mycursor = mycon.cursor()
