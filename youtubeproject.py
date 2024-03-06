@@ -126,31 +126,31 @@ except Exception as e:
     print(f"Error connecting to MongoDB: {e}")
 
 def channel_details(channel_id):
-    ch_details=get_channel_info(channel_id)
-    vi_ids=get_videos_ids(channel_id)
-    vi_detail=get_video_info(vi_ids)
-    com_details=get_comment_info(vi_ids)
+    ch_details = get_channel_info(channel_id)
+    vi_ids = get_videos_ids(channel_id)
+    vi_detail = get_video_info(vi_ids)
+    com_details = get_comment_info(vi_ids)
 
     col = db['Channel_details']
-    col.insert_one({'channel_information':ch_details,'video_information':vi_detail,
-                    'comment_information':com_details})
+    col.insert_one({'channel_information': ch_details, 'video_information': vi_detail,
+                    'comment_information': com_details})
     return 'upload complete'
-
 
 def channels_table():
     mycon = mysql.connector.connect(host='localhost', user='root', password='12345', database='youtube_data')
-    mycursor = mycon.cursor()
+    mycursor = mycon.cursor() 
 
-    query = '''CREATE TABLE channel_details (
-    Channel_Name VARCHAR(100),
-    Channel_ID VARCHAR(100) PRIMARY KEY,
-    Subscribers BIGINT,
-    Views BIGINT,
-    Total_Videos INT,
-    Channel_description TEXT,
-    Playlist_ID VARCHAR(100))'''
+    query = '''CREATE TABLE if not exists channel_details (
+                Channel_Name VARCHAR(100),
+                Channel_ID VARCHAR(100) PRIMARY KEY,
+                Subscribers BIGINT,
+                Views BIGINT,
+                Total_Videos INT,
+                Channel_description TEXT,
+                Playlist_ID VARCHAR(100))'''
     mycursor.execute(query)
     mycon.commit()
+   
 
     ch_list = []
     db = connection['Youtube_data']
@@ -186,7 +186,7 @@ def channels_table():
     except:
         print('Error during batch insert')
 
- channels_table:
+channels_table()
 
 mycon = mysql.connector.connect(host='localhost', user='root', password='12345', database='youtube_data')
 mycursor = mycon.cursor()
@@ -244,10 +244,6 @@ def videos_table():
     mycon = mysql.connector.connect(host='localhost', user='root', password='12345', database='youtube_data')
     mycursor = mycon.cursor()
 
-    drop_query = '''DROP TABLE IF EXISTS videos'''
-    mycursor.execute(drop_query)
-    mycon.commit()
-
     create_query = '''CREATE TABLE IF NOT EXISTS videos (
                 Channel_Name varchar(100),
                 Channel_Id varchar(100),
@@ -277,6 +273,8 @@ def videos_table():
             vid_list.append(vid_data['video_information'][i])
 
     df1 = pd.DataFrame(vid_list)
+
+    # Assuming df1 is your DataFrame
     df1['Published_Date'] = pd.to_datetime(df1['Published_Date']).dt.strftime('%Y-%m-%d %H:%M:%S')
 
     for index, row in df1.iterrows():
@@ -305,18 +303,17 @@ def videos_table():
 
     return df1
 
+# Call the function and store the returned DataFrame
 df1 = videos_table()
-df1.head()
+
+# Now df1 is accessible outside the function
+df1.head()  # You can perform further operations on df1 as needed
 
 
 def comments_table():
 
     mycon = mysql.connector.connect(host ='localhost',user='root',password='12345',database ='youtube_data')
     mycursor = mycon.cursor()
-
-    drop_query ='''drop table if exists comments'''
-    mycursor.execute(drop_query)
-    mycon.commit()
 
     query = '''CREATE TABLE IF NOT EXISTS comments (
                 Comment_Id varchar(100) primary key,
@@ -337,9 +334,6 @@ def comments_table():
             com_list.append(com_data['comment_information'][i])
 
     df2= pd.DataFrame(com_list)
-
-    mycon = mysql.connector.connect(host ='localhost',user='root',password='12345',database ='youtube_data')
-    mycursor = mycon.cursor()
 
     df2['Comment_published'] = pd.to_datetime(df2['Comment_published']).dt.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -365,6 +359,7 @@ def comments_table():
         except Exception as e:
             print(f'Error during batch insert: {e}')
 
+    # Close the cursor and connection outside of the loop
     mycursor.close()
     mycon.close()
 
@@ -386,10 +381,9 @@ def show_channel_table():
         ch_list.append(ch_data['channel_information'])
 
     df = st.dataframe(ch_list)
-
+    
     return df
-
-
+    
 def show_videos_table():
     vid_list = []
     db = connection['Youtube_data']
@@ -417,51 +411,94 @@ def show_comments_table():
 
     return df2
 
-#streamlit code
-try:
-    with st.sidebar:
-        st.title(':red[YouTube Data Harvesting and Warehousing using SQL, MongoDB and Streamlit]')
-        st.header('Skills take away')
-        st.caption('Python scripting')
-        st.caption('Data Collection')
-        st.caption('Mongo DB')
-        st.caption('Streamlit')
-        st.caption('API integration')
-        st.caption('Data Management using MongoDB and SQL')
-        st.header('Domain')
-        st.caption('Social Media')
+def get_channel_names_from_mongodb():
 
-    Channel_ID=st.text_input('Enter Channel ID:')    
-
-    if st.button('Collect and Store data'):
-        ch_ids=[]
+    try:
+        connection = MongoClient('mongodb+srv://mukeshbabu120193:WBn0gpPVqmOGkrwO@cluster0.fttcjju.mongodb.net/')
         db = connection['Youtube_data']
         col = db['Channel_details']
-        for ch_data in col.find({},{'_id':0,'channel_information':1}):
-            ch_ids.append(ch_data['channel_information']['Channel_ID'])
-        
-        if Channel_ID in ch_ids: 
-            st.success('Channel details already exists')
-        
-        else: 
-            insert = channel_details(Channel_ID)
-            st.success(insert)
 
-    if st.button('Migrate to SQL'):
-        Table = tables()
-        st.success(Table)
+        documents = col.find({}, {'channel_information.Channel_Name': 1, '_id': 0})
+        channel_names = [doc['channel_information']['Channel_Name'] for doc in documents]
 
-    show_table=st.radio('SELECT THE TABLE FOR VIEW',('CHANNELS', 'VIDEOS','COMMENTS'))
-    if show_table== 'CHANNELS':
-        show_channel_table()
+        return channel_names
+    except Exception as e:
+        print(f"Error retrieving channel names from MongoDB: {e}")
+        return []
 
-    elif show_table=='VIDEOS':
-        show_videos_table()
+# Streamlit code
 
-    elif show_table=='COMMENTS':
-        show_comments_table()
-except Exception as e:
-    st.error(f"An error occurred: {e}")
+def main():
+    
+    st.markdown('<p style="font-size:20px; color:red;">YouTube Data Harvesting and Warehousing using SQL, MongoDB and Streamlit</p>', unsafe_allow_html=True)
+
+    # Get user input for channel ID(s)
+    channel_ids = st.sidebar.text_input('Enter YouTube Channel IDs (separated by commas):')
+
+    options = st.selectbox('Select your option', ('Retrieve Data', 'Store in MongoDB', 'Migrate to SQL'))
+    
+
+    if options == 'Retrieve Data':
+        if st.button('Retrieve Data'):
+            channel_id_list = [channel_id.strip() for channel_id in channel_ids.split(',')]
+            
+            # Now you can use the channel_id_list for further processing
+            for channel_id in channel_id_list:
+                data = get_channel_info(channel_id)
+                st.write(data)
+
+    elif options == 'Store in MongoDB':
+        button_clicked = st.button('Store in MongoDB')
+
+        if button_clicked:
+            channel_id_list = [channel_id.strip() for channel_id in channel_ids.split(',')]
+            for channel_id in channel_id_list:
+                ch_ids = []
+                db = connection['Youtube_data']
+                col = db['Channel_details']
+                for ch_data in col.find({}, {'_id': 0, 'channel_information': 1}):
+                    ch_ids.append(ch_data['channel_information']['Channel_ID'])
+                
+                if channel_id in ch_ids: 
+                    st.success('Channel details already exist')
+                
+                else: 
+                    insert = channel_details(channel_id)  # Use channel_id here
+                    st.success(insert)
+
+
+    elif options == 'Migrate to SQL':
+        selected_channel = st.selectbox('Select a Channel to Migrate Data to SQL', get_channel_names_from_mongodb())
+        if st.button('Migrate to SQL'):
+            Table = tables()
+            st.success(Table)
+
+if __name__ == '__main__':
+    main()
+
+with st.sidebar:
+   
+    st.header('Skills take away')
+    st.caption('Python scripting')
+    st.caption('Data Collection')
+    st.caption('Mongo DB')
+    st.caption('Streamlit')
+    st.caption('API integration')
+    st.caption('Data Management using MongoDB and SQL')
+    st.header('Domain')
+    st.caption('Social Media')
+
+show_table=st.radio('Select a table to display',('Channels', 'Videos','Comments'))
+st.markdown('<p style="font-size:14px;">Table:</p>', unsafe_allow_html=True)
+if show_table== 'Channels':
+    show_channel_table()
+
+elif show_table=='Videos':
+    show_videos_table()
+
+elif show_table=='Comments':
+    show_comments_table()
+
 
 mycon = mysql.connector.connect(host ='localhost',user='root',password='12345',database ='youtube_data')
 mycursor = mycon.cursor()
@@ -499,7 +536,7 @@ elif question == '3. 10 most viewed videos':
                 ORDER BY views DESC LIMIT 10'''
     mycursor.execute(query3)
     t3 = mycursor.fetchall()
-    df3 = pd.DataFrame(t3, columns=['views', 'channel_name', 'video_title'])
+    df3 = pd.DataFrame(t3, columns=['views', 'channel_name', 'video_title'])  # Adjust column names
     st.write(df3)
 
 elif question == '4. Comments in each videos':
@@ -517,7 +554,7 @@ elif question == '5. Videos with highest likes':
                 ORDER BY Likes DESC LIMIT 10'''
      mycursor.execute(query5)  # Use the correct query variable 'query5'
      t5 = mycursor.fetchall()
-     df5 = pd.DataFrame(t5, columns=['video_title', 'channelname', 'likecount'])
+     df5 = pd.DataFrame(t5, columns=['video_title', 'channelname', 'likecount'])  # Adjust column names
      st.write(df5)
 
 elif question == '6. Likes of all videos':
@@ -569,7 +606,7 @@ elif question == '10. Videos with highest number of comments':
                 '''
         mycursor.execute(query10)
         t10 = mycursor.fetchall()
-        df10 = pd.DataFrame(t10, columns=['video_title', 'channelname', 'comments']) 
+        df10 = pd.DataFrame(t10, columns=['video_title', 'channelname', 'comments'])  # Adjust column names
         st.write(df10)
 
 mycursor.close()
